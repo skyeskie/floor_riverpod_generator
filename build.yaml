@@ -1,6 +1,6 @@
 builders:
   floor_riverpod_builder:
-    import: 'package:floor_riverpod_generator/floor_riverpod_generator.dart'
+    import: 'package:floor_riverpod_generator/builder.dart'
     builder_factories: ['floorRiverpodProviderBuilder']
     build_extensions: {'.dart': ['floorRiverpod.g.part']}
     auto_apply: dependents

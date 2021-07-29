@@ -1,18 +1,22 @@
 name: floor_riverpod_generator
 description: A supplemental generator to make Riverpod providers for functions in a Floor DAO
-version: 0.1.0
-# homepage: https://www.example.com
+version: 0.2.0
+repository: https://github.com/skyeskie/floor_riverpod_generator
+
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
+  analyzer: ^2.0.0
+  build_runner: ^2.0.6
   floor_annotation: ^1.0.0
   flutter_riverpod: '>=0.14.0+3 <2.0.0'
+  sqflite: ^2.0.0+3
+  source_gen: ^1.0.5
 
 dev_dependencies:
-  build_runner: ^2.0.6
+  analyzer: ^2.0.0
   flutter_lints: ^1.0.4
-  source_gen: ^1.0.5
   test: ^1.17.10

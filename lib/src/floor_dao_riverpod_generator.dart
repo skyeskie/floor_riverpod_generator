@@ -4,19 +4,10 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 
-class DaoProvider {
-  final String dbProvider; //TODO: Generate this (from @Database)
-  final String daoNameOnDb; //TODO: We should be able to grab this
-  const DaoProvider({
-    required this.dbProvider,
-    required this.daoNameOnDb,
-  });
-}
+import 'annotations.dart';
+import 'cfg.dart';
 
-Builder floorRiverpodProviderBuilder(BuilderOptions options) =>
-    SharedPartBuilder([FloorProviderBuilder()], 'floorRiverpod');
-
-class FloorProviderBuilder extends GeneratorForAnnotation<DaoProvider> {
+class FloorDaoRiverpodGenerator extends GeneratorForAnnotation<DaoProvider> {
   @override
   FutureOr<String> generateForAnnotatedElement(
     Element element,
@@ -25,23 +16,32 @@ class FloorProviderBuilder extends GeneratorForAnnotation<DaoProvider> {
   ) {
     if (element is! ClassElement) return '';
     final T = element.name;
-    final dbProvider = annotation.read('dbProvider').stringValue;
-    final daoNameOnDb = annotation.read('daoNameOnDb').stringValue;
+    final db = annotation.read('databaseType').typeValue.element;
+    const dbProvider = DEFAULT_DB_PROVIDER_NAME;
+
+    if (db is! ClassElement) {
+      throw ArgumentError.value(
+        db,
+        'Database type not a class',
+        'The parameter must reference a ClassElement',
+      );
+    }
+
+    final daoOnDb = db.fields.singleWhere((e) => e.declaration.id == e.id);
+    final daoNameOnDb = daoOnDb.name;
 
     final daoProviderName = '_provider\$$T';
 
     final out = [
-      '''
-/// Private base provider for the DAO
-final $daoProviderName = FutureProvider<$T>((ref) async {
-  final db = await ref.read($dbProvider.future);
-  return db.$daoNameOnDb;
-});
-
-/// Static class with providers for $T
-class $T\$Providers {
-  static FutureProvider<$T> get dao => $daoProviderName;
-'''
+      '/// Private base provider for the DAO',
+      'final $daoProviderName = FutureProvider<$T>((ref) async {',
+      '  final db = await ref.read($dbProvider.future);',
+      '  return db.$daoNameOnDb;',
+      '});',
+      '',
+      '/// Static class with providers for $T',
+      'class $T\$Providers {',
+      '  static FutureProvider<$T> get dao => $daoProviderName;',
     ];
 
     //We should put a provider iff
