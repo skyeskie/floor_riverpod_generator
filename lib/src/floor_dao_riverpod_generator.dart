@@ -38,7 +38,14 @@ class FloorDaoRiverpodGenerator extends GeneratorForAnnotation<DaoProvider> {
       );
     }
 
-    final daoOnDb = db.fields.singleWhere((e) => e.declaration.id == e.id);
+    final matchThis = TypeChecker.fromStatic(element.thisType);
+
+    final daoOnDb = db.fields.singleWhere(
+        (e) => matchThis.isExactlyType(e.type),
+        orElse: () => throw ArgumentError.value('Could not match ' +
+            element.thisType.toString() +
+            ' among ' +
+            db.fields.map((e) => e.type.toString()).join(',')));
     final daoNameOnDb = daoOnDb.name;
 
     final daoProviderName = '_provider\$$T';
