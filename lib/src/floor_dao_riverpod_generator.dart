@@ -6,12 +6,11 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'annotations.dart';
 import 'cfg.dart';
 
 typedef VoidFuture = Future<void>;
 
-class FloorDaoRiverpodGenerator extends GeneratorForAnnotation<DaoProvider> {
+class FloorDaoRiverpodGenerator {
   final $Future = const TypeChecker.fromRuntime(Future);
   final $Stream = const TypeChecker.fromRuntime(Stream);
   final $FutureOrStream = const TypeChecker.any([
@@ -19,14 +18,12 @@ class FloorDaoRiverpodGenerator extends GeneratorForAnnotation<DaoProvider> {
     TypeChecker.fromRuntime(Stream),
   ]);
 
-  @override
   FutureOr<String> generateForAnnotatedElement(
     Element element,
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
     if (element is! ClassElement) return '';
-    final T = element.name;
     final db = annotation.read('databaseType').typeValue.element;
     const dbProvider = DEFAULT_DB_PROVIDER_NAME;
 
@@ -37,6 +34,16 @@ class FloorDaoRiverpodGenerator extends GeneratorForAnnotation<DaoProvider> {
         'The parameter must reference a ClassElement',
       );
     }
+
+    return directGenerateForDao(element, db, dbProvider);
+  }
+
+  FutureOr<String> directGenerateForDao(
+    ClassElement element,
+    ClassElement db,
+    String dbProviderName,
+  ) {
+    final T = element.name;
 
     final matchThis = TypeChecker.fromStatic(element.thisType);
 
@@ -53,7 +60,7 @@ class FloorDaoRiverpodGenerator extends GeneratorForAnnotation<DaoProvider> {
     final out = [
       '/// Private base provider for the DAO',
       'final $daoProviderName = FutureProvider<$T>((ref) async {',
-      '  final db = await ref.read($dbProvider.future);',
+      '  final db = await ref.read($dbProviderName.future);',
       '  return db.$daoNameOnDb;',
       '});',
       '',

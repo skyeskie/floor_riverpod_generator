@@ -1,6 +1,6 @@
 name: floor_riverpod_generator
 description: A supplemental generator to make Riverpod providers for functions in a Floor DAO
-version: 0.2.0
+version: 0.3.0
 repository: https://github.com/skyeskie/floor_riverpod_generator
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

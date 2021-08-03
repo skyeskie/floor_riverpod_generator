@@ -2,4 +2,3 @@
 library floor_riverpod_generator;
 
 export 'builder.dart';
-export 'src/annotations.dart';
